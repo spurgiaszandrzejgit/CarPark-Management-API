@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CarPark.Api/CarPark.Api.csproj" Id="be832100-40d2-464a-980c-b426cc2b1897" />
+  <Project Path="CarPark.Tests/CarPark.Tests.csproj" Id="e6dee0e4-bb68-4c69-bded-e035079264eb" />
+</Solution>
