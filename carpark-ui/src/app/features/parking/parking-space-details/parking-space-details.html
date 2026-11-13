@@ -1,0 +1,109 @@
+
+<section class="space-details">
+  <header class="space-details__header">
+    <div>
+      <span class="space-details__label">PARKING SPACE</span>
+      <h2>P{{ spaceNumber().toString().padStart(2, '0') }}</h2>
+    </div>
+
+    <button type="button" class="back-button" (click)="close()">
+      Back
+    </button>
+  </header>
+
+  @if (success()) {
+    <p class="message message--success">{{ success() }}</p>
+  }
+
+  @if (error()) {
+    <p class="message message--error">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="state-message">Loading parking details...</p>
+  } @else if (details(); as space) {
+    @if (space.isOccupied) {
+      <div class="session-card">
+        <span class="status status--occupied">Occupied</span>
+
+        <h3>{{ space.vehicleReg }}</h3>
+
+        <div class="detail-row">
+          <span>Vehicle type</span>
+          <strong>
+            @switch (space.vehicleType) {
+              @case (1) { Small }
+              @case (2) { Medium }
+              @case (3) { Large }
+              @default { Unknown }
+            }
+          </strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Entry time</span>
+          <strong>{{ space.timeIn | date:'dd MMM yyyy, HH:mm:ss' }}</strong>
+        </div>
+
+        <div class="charge">
+          <span>Current charge</span>
+          <strong>{{ space.currentCharge | currency:'GBP' }}</strong>
+        </div>
+
+        <button
+          type="button"
+          class="action-button action-button--exit"
+          [disabled]="submitting()"
+          (click)="exitVehicle()"
+        >
+          {{ submitting() ? 'Processing...' : 'Exit Vehicle' }}
+        </button>
+      </div>
+    } @else {
+      <div class="session-card">
+        <span class="status status--available">Available</span>
+        <h3>Park a vehicle</h3>
+
+        <p class="hint">
+          Parking spaces are assigned automatically.
+          The system will select the first available space,
+          regardless of which space you clicked.
+        </p>
+
+        <form [formGroup]="parkForm" (ngSubmit)="parkVehicle()">
+          <div class="form-field">
+            <label for="vehicleReg">Vehicle registration</label>
+            <input
+              id="vehicleReg"
+              type="text"
+              formControlName="vehicleReg"
+              placeholder="e.g. WA12345"
+            />
+
+            @if (parkForm.controls.vehicleReg.touched &&
+                 parkForm.controls.vehicleReg.invalid) {
+              <small>Enter a valid registration number.</small>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="vehicleType">Vehicle type</label>
+            <select id="vehicleType" formControlName="vehicleType">
+              <option [ngValue]="1">Small</option>
+              <option [ngValue]="2">Medium</option>
+              <option [ngValue]="3">Large</option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            class="action-button action-button--park"
+            [disabled]="submitting()"
+          >
+            {{ submitting() ? 'Processing...' : 'Park Vehicle' }}
+          </button>
+        </form>
+      </div>
+    }
+  }
+</section>

@@ -1,0 +1,156 @@
+
+.parking-lot {
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    h2 {
+      margin: 0;
+      color: #0f172a;
+      font-size: 22px;
+    }
+
+    p {
+      margin: 6px 0 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 600;
+
+      &:hover:not(:disabled) {
+        background: #f1f5f9;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.parking-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.parking-space {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  width: 100%;
+  min-height: 150px;
+  padding: 14px 6px;
+
+  border: 2px solid #bbf7d0;
+  border-radius: 12px;
+  background: #f0fdf4;
+  color: #16a34a;
+
+  font: inherit;
+  text-align: center;
+  appearance: none;
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: currentColor;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 3px;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &__number {
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+  }
+
+  &__icon svg {
+    width: 52px;
+    height: 52px;
+  }
+
+  &__status {
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  &__registration {
+    font-size: 11px;
+    font-weight: 600;
+    color: #334155;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+
+  &--occupied {
+    border-color: #fcd34d;
+    background: #fffbeb;
+    color: #d97706;
+  }
+}
+
+.state-message {
+  padding: 24px;
+  color: #64748b;
+  text-align: center;
+
+  &--error {
+    color: #dc2626;
+  }
+}
+
+@media (max-width: 900px) {
+  .parking-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .parking-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .parking-lot {
+    padding: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parking-space {
+    transition: none;
+  }
+}

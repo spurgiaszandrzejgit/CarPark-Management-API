@@ -149,4 +149,79 @@ public class ParkingService
         };
     }
 
+    public async Task<List<ParkingSpaceResponse>> GetParkingSpacesAsync()
+    {
+        return await _context.ParkingSpaces
+            .AsNoTracking()
+            .OrderBy(space => space.SpaceNumber)
+            .Select(space => new ParkingSpaceResponse
+            {
+                SpaceNumber = space.SpaceNumber,
+
+                IsOccupied = _context.ParkingSessions
+                    .Any(session =>
+                        session.ParkingSpaceId == space.Id &&
+                        session.TimeOut == null),
+
+                VehicleReg = (
+                        from session in _context.ParkingSessions
+                        join vehicle in _context.Vehicles
+                            on session.VehicleId equals vehicle.Id
+                        where session.ParkingSpaceId == space.Id
+                              && session.TimeOut == null
+                        select vehicle.VehicleReg
+                    ).FirstOrDefault()
+            })
+            .ToListAsync();
+    }
+
+    public async Task<ParkingSpaceDetailsResponse?> GetParkingSpaceDetailsAsync(int spaceNumber)
+    {
+        var space = await _context.ParkingSpaces
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.SpaceNumber == spaceNumber);
+
+        if (space is null)
+            return null;
+
+        var activeSession = await (
+            from session in _context.ParkingSessions.AsNoTracking()
+            join vehicle in _context.Vehicles.AsNoTracking()
+                on session.VehicleId equals vehicle.Id
+            where session.ParkingSpaceId == space.Id
+                  && session.TimeOut == null
+            select new
+            {
+                vehicle.VehicleReg,
+                vehicle.VehicleType,
+                session.TimeIn
+            }
+        ).FirstOrDefaultAsync();
+
+        if (activeSession is null)
+        {
+            return new ParkingSpaceDetailsResponse
+            {
+                SpaceNumber = space.SpaceNumber,
+                IsOccupied = false
+            };
+        }
+
+        var now = _timeProvider.GetUtcNow().UtcDateTime;
+        var duration = now - activeSession.TimeIn;
+
+        var currentCharge = ParkingChargeCalculator.Calculate(
+            activeSession.VehicleType,
+            duration);
+
+        return new ParkingSpaceDetailsResponse
+        {
+            SpaceNumber = space.SpaceNumber,
+            IsOccupied = true,
+            VehicleReg = activeSession.VehicleReg,
+            VehicleType = (int)activeSession.VehicleType,
+            TimeIn = activeSession.TimeIn,
+            CurrentCharge = currentCharge
+        };
+    }
 }

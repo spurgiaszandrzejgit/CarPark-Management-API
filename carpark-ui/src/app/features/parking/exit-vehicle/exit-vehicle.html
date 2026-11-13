@@ -1,0 +1,58 @@
+
+<section class="parking-form">
+  <h2>Vehicle Exit</h2>
+  <p>Check out a vehicle and calculate the parking charge.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-field">
+      <label for="exitVehicleReg">Vehicle Registration</label>
+
+      <input
+        id="exitVehicleReg"
+        type="text"
+        formControlName="vehicleReg"
+        placeholder="e.g. WA12345"
+      />
+
+      @if (form.controls.vehicleReg.touched &&
+           form.controls.vehicleReg.invalid) {
+        <small class="validation-error">
+          Vehicle registration is required.
+        </small>
+      }
+    </div>
+
+    <button type="submit" [disabled]="loading()">
+      {{ loading() ? 'Processing...' : 'Exit Vehicle' }}
+    </button>
+  </form>
+
+  @if (error()) {
+    <div class="error-message" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  @if (result(); as exit) {
+    <div class="success-message" role="status">
+      <strong>Vehicle exited successfully!</strong>
+
+      <p>Registration: {{ exit.vehicleReg }}</p>
+
+      <p>
+        Time in:
+        {{ exit.timeIn | date:'dd/MM/yyyy HH:mm:ss' }}
+      </p>
+
+      <p>
+        Time out:
+        {{ exit.timeOut | date:'dd/MM/yyyy HH:mm:ss' }}
+      </p>
+
+      <h3>
+        Total Charge:
+        {{ exit.vehicleCharge | currency:'GBP' }}
+      </h3>
+    </div>
+  }
+</section>

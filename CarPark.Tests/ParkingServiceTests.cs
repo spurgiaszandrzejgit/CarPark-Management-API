@@ -245,4 +245,25 @@ public class ParkingServiceTests
 
         Assert.Equal("Vehicle not found.", exception.Message);
     }
+
+    [Fact]
+    public async Task GetParkingSpaceDetailsAsync_ShouldCalculateCurrentCharge()
+    {
+        await using var test = await ParkingTestContext.CreateAsync(capacity: 1);
+
+        await test.Service.ParkVehicleAsync(new ParkVehicleRequest
+        {
+            VehicleReg = "WA12345",
+            VehicleType = 1
+        });
+
+        test.Clock.Advance(TimeSpan.FromMinutes(10));
+
+        var details = await test.Service.GetParkingSpaceDetailsAsync(1);
+
+        Assert.NotNull(details);
+        Assert.True(details.IsOccupied);
+        Assert.Equal("WA12345", details.VehicleReg);
+        Assert.Equal(3.00m, details.CurrentCharge);
+    }
 }

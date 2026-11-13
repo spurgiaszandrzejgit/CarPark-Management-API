@@ -1,0 +1,53 @@
+
+<section class="parking-form">
+  <h2>Vehicle Entry</h2>
+  <p>Register a vehicle and assign a parking space.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-field">
+      <label for="vehicleReg">Vehicle Registration</label>
+      <input
+        id="vehicleReg"
+        type="text"
+        formControlName="vehicleReg"
+        placeholder="e.g. WA12345"
+        maxlength="20"
+      />
+
+      @if (form.controls.vehicleReg.touched &&
+           form.controls.vehicleReg.invalid) {
+        <small class="validation-error">
+          Vehicle registration is required.
+        </small>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="vehicleType">Vehicle Type</label>
+      <select id="vehicleType" formControlName="vehicleType">
+        <option [ngValue]="1">Small — £0.10/min</option>
+        <option [ngValue]="2">Medium — £0.20/min</option>
+        <option [ngValue]="3">Large — £0.40/min</option>
+      </select>
+    </div>
+
+    <button type="submit" [disabled]="loading()">
+      {{ loading() ? 'Parking...' : 'Park Vehicle' }}
+    </button>
+  </form>
+
+  @if (error()) {
+    <div class="error-message" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  @if (result(); as parking) {
+    <div class="success-message" role="status">
+      <strong>Vehicle parked successfully!</strong>
+      <p>Registration: {{ parking.vehicleReg }}</p>
+      <p>Assigned space: {{ parking.spaceNumber }}</p>
+      <p>Time in: {{ parking.timeIn | date:'dd/MM/yyyy HH:mm:ss' }}</p>
+    </div>
+  }
+</section>

@@ -1,0 +1,94 @@
+
+<main class="dashboard">
+  <header class="dashboard-header">
+    <div>
+      <p class="subtitle">Parking Management System</p>
+      <h1>CarPark Dashboard</h1>
+      <p>Real-time parking availability</p>
+    </div>
+
+    <button
+      type="button"
+      (click)="refreshParking()"
+      [disabled]="loading()">
+      {{ loading() ? 'Loading...' : 'Refresh' }}
+    </button>
+  </header>
+
+  @if (error()) {
+    <div class="error-message" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  @if (parkingStatus(); as status) {
+    <section class="stats">
+      <article class="stat-card">
+        <span>Available Spaces</span>
+        <strong>{{ status.availableSpaces }}</strong>
+        <p>Ready for parking</p>
+      </article>
+
+      <article class="stat-card">
+        <span>Occupied Spaces</span>
+        <strong>{{ status.occupiedSpaces }}</strong>
+        <p>Currently in use</p>
+      </article>
+
+      <article class="stat-card">
+        <span>Total Capacity</span>
+        <strong>
+          {{ status.availableSpaces + status.occupiedSpaces }}
+        </strong>
+        <p>Parking spaces</p>
+      </article>
+    </section>
+
+
+    <app-parking-lot
+      (spaceSelected)="selectSpace($event)"
+    />
+
+    @if (selectedSpaceNumber(); as spaceNumber) {
+      <div class="drawer-backdrop" (click)="closeSpaceDetails()"></div>
+
+      <aside
+        class="parking-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Parking space details"
+      >
+      <app-parking-space-details
+        [spaceNumber]="spaceNumber"
+        (closed)="closeSpaceDetails()"
+        (parkingChanged)="refreshParking()"
+        (operationCompleted)="showNotification($event)"
+      />
+      </aside>
+    }
+
+
+  } @else if (loading()) {
+    <p>Loading parking information...</p>
+  }
+</main>
+
+@if (notification(); as message) {
+  <div class="toast" role="status" aria-live="polite">
+    <span class="toast__icon">✓</span>
+
+    <span class="toast__message">
+      {{ message }}
+    </span>
+
+    <button
+      type="button"
+      class="toast__close"
+      aria-label="Dismiss notification"
+      (click)="dismissNotification()"
+    >
+      ×
+    </button>
+  </div>
+}
+

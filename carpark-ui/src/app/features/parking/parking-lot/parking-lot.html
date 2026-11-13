@@ -1,0 +1,56 @@
+
+<section class="parking-lot">
+  <header class="parking-lot__header">
+    <div>
+      <h2>Parking Lot</h2>
+      <p>Live parking availability</p>
+    </div>
+
+    <button type="button" (click)="loadSpaces()" [disabled]="loading()">
+      Refresh
+    </button>
+  </header>
+
+  @if (loading()) {
+    <p class="state-message">Loading parking spaces...</p>
+  } @else if (error()) {
+    <p class="state-message state-message--error">{{ error() }}</p>
+  } @else {
+    <div class="parking-grid">
+      @for (space of spaces(); track space.spaceNumber) {
+            <button
+            type="button"
+            class="parking-space"
+            [class.parking-space--occupied]="space.isOccupied"
+            (click)="selectSpace(space.spaceNumber)"
+            >
+
+            <span class="parking-space__number">
+                P{{ space.spaceNumber.toString().padStart(2, '0') }}
+            </span>
+
+            <div class="parking-space__icon">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                <path
+                    fill="currentColor"
+                    d="M18 14h28c3 0 5 2 6 5l5 14v18c0 2-2 4-4 4h-5v-6H16v6h-5c-2 0-4-2-4-4V33l5-14c1-3 3-5 6-5zm1 7-4 12h34l-4-12H19zm-3 18a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm32 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"
+                />
+                </svg>
+            </div>
+
+            <span class="parking-space__status">
+                {{ space.isOccupied ? 'Occupied' : 'Available' }}
+            </span>
+
+          @if (space.vehicleReg) {
+            <span class="parking-space__registration">
+              {{ space.vehicleReg }}
+            </span>
+          }
+        </button>
+      } @empty {
+        <p class="state-message">No parking spaces configured.</p>
+      }
+    </div>
+  }
+</section>

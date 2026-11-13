@@ -61,4 +61,30 @@ public class ParkingController : ControllerBase
         }
     }
 
+    [HttpGet("spaces")]
+    public async Task<ActionResult<List<ParkingSpaceResponse>>> GetParkingSpaces()
+    {
+        var spaces = await _parkingService.GetParkingSpacesAsync();
+
+        return Ok(spaces);
+    }
+
+
+    [HttpGet("spaces/{spaceNumber:int}")]
+    public async Task<ActionResult<ParkingSpaceDetailsResponse>> GetParkingSpaceDetails(
+    int spaceNumber)
+    {
+        var result = await _parkingService.GetParkingSpaceDetailsAsync(spaceNumber);
+
+        if (result is null)
+        {
+            return NotFound(new
+            {
+                Message = "Parking space not found."
+            });
+        }
+
+        return Ok(result);
+    }
+
 }
