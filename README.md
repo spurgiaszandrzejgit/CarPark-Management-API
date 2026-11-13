@@ -1,8 +1,10 @@
 # CarPark Management API
 
-A REST API built with ASP.NET Core (.NET 10) to manage parking spaces, vehicle arrivals and exits, and parking charges.
+A full-stack parking management application built with ASP.NET Core (.NET 10) and Angular 20. It manages parking availability, vehicle arrivals and departures, and time-based parking charges through a REST API and an interactive dashboard.
 
 ## Technology
+
+**Backend and testing**
 
 - .NET 10 / ASP.NET Core Web API
 - Entity Framework Core with SQL Server LocalDB
@@ -11,15 +13,49 @@ A REST API built with ASP.NET Core (.NET 10) to manage parking spaces, vehicle a
 - `WebApplicationFactory` and SQL Server LocalDB for HTTP integration tests
 - Swagger / OpenAPI
 
+**Frontend**
+
+- Angular 20 and TypeScript
+- SCSS
+- Angular Signals and Reactive Forms
+- HTTP client integration with the REST API
+
+## Features
+
+- Dashboard showing available, occupied, and total parking spaces.
+- Interactive parking lot with individual space details.
+- Register vehicle arrivals with registration number and vehicle type.
+- Automatically allocate the lowest-numbered available space (selecting a space in the UI does not reserve that specific space).
+- View active parking sessions, entry times, and current charges.
+- Process vehicle departures and display the final charge.
+- Form validation, API error messages, and operation notifications.
+
+## Application screenshots
+
+### Parking dashboard
+
+![Parking dashboard](docs/screenshots/parking-dashboard.png)
+
+### Park a vehicle
+
+![Park a vehicle](docs/screenshots/park-vehicle.png)
+
+### Occupied parking space
+
+![Occupied parking space](docs/screenshots/occupied-space.png)
+
 ## Requirements
 
 - .NET 10 SDK
+- Node.js and npm (for the Angular frontend)
 - Windows with SQL Server Express LocalDB installed and an available `MSSQLLocalDB` instance
 - EF Core CLI (`dotnet-ef`) to apply migrations (if not installed, install a compatible version)
 
 > **Platform note:** The API and HTTP integration tests are configured to use SQL Server LocalDB, which is Windows-specific. The HTTP tests will not run unchanged on Linux or macOS.
 
 ## Setup and run
+
+### Backend
 
 From the repository root:
 
@@ -56,7 +92,28 @@ When running in the `Development` environment, Swagger UI is available at `/swag
 
 At startup, `ParkingDbSeeder` inserts numbered parking spaces if the database does not already contain any. Changing `Parking:Capacity` does not resize a previously seeded parking lot.
 
+### Frontend
+
+With the backend running, open another terminal from the repository root:
+
+```bash
+cd carpark-ui
+npm install
+npm start
+```
+
+Open `http://localhost:4200`. Ensure the frontend API base URL in the Angular environment configuration matches the running backend address. The backend must allow the frontend origin through its CORS configuration.
+
 ## API
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/parking` | Current parking availability |
+| `GET` | `/parking/spaces` | All parking spaces and occupancy |
+| `GET` | `/parking/spaces/{spaceNumber}` | Details of one parking space |
+| `POST` | `/parking` | Park a vehicle |
+| `POST` | `/parking/exit` | Complete a parking session |
+
 
 ### `POST /parking`
 
@@ -154,6 +211,9 @@ For a Small vehicle:
 
 ## Tests
 
+The backend has automated xUnit tests. Frontend behavior has been checked manually through the Angular dashboard; no automated frontend test suite is included in the current scope.
+
+
 Run all tests from the repository root:
 
 ```bash
@@ -182,4 +242,4 @@ The HTTP test factory uses a unique `CarParkTest_<GUID>` database per factory in
 
 ## Scope
 
-This is a small take-home API focused on clear business rules, persistence, validation, and automated testing. It intentionally avoids unnecessary architectural layers and infrastructure.
+This is a small full-stack parking management project focused on clear business rules, persistence, validation, a usable Angular interface, and automated backend testing. It intentionally avoids unnecessary architectural layers and infrastructure.
