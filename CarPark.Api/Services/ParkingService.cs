@@ -158,19 +158,13 @@ public class ParkingService
             {
                 SpaceNumber = space.SpaceNumber,
 
-                IsOccupied = _context.ParkingSessions
-                    .Any(session =>
-                        session.ParkingSpaceId == space.Id &&
-                        session.TimeOut == null),
+                IsOccupied = space.ParkingSessions
+                    .Any(session => session.TimeOut == null),
 
-                VehicleReg = (
-                        from session in _context.ParkingSessions
-                        join vehicle in _context.Vehicles
-                            on session.VehicleId equals vehicle.Id
-                        where session.ParkingSpaceId == space.Id
-                              && session.TimeOut == null
-                        select vehicle.VehicleReg
-                    ).FirstOrDefault()
+                VehicleReg = space.ParkingSessions
+                    .Where(session => session.TimeOut == null)
+                    .Select(session => session.Vehicle.VehicleReg)
+                    .FirstOrDefault()
             })
             .ToListAsync();
     }
@@ -184,19 +178,18 @@ public class ParkingService
         if (space is null)
             return null;
 
-        var activeSession = await (
-            from session in _context.ParkingSessions.AsNoTracking()
-            join vehicle in _context.Vehicles.AsNoTracking()
-                on session.VehicleId equals vehicle.Id
-            where session.ParkingSpaceId == space.Id
-                  && session.TimeOut == null
-            select new
+        var activeSession = await _context.ParkingSessions
+            .AsNoTracking()
+            .Where(session =>
+                session.ParkingSpaceId == space.Id &&
+                session.TimeOut == null)
+            .Select(session => new
             {
-                vehicle.VehicleReg,
-                vehicle.VehicleType,
+                session.Vehicle.VehicleReg,
+                session.Vehicle.VehicleType,
                 session.TimeIn
-            }
-        ).FirstOrDefaultAsync();
+            })
+            .FirstOrDefaultAsync();
 
         if (activeSession is null)
         {

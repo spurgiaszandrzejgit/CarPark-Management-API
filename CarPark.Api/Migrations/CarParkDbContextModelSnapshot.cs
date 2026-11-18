@@ -103,17 +103,31 @@ namespace CarPark.Api.Migrations
 
             modelBuilder.Entity("CarPark.Api.Models.ParkingSession", b =>
                 {
-                    b.HasOne("CarPark.Api.Models.ParkingSpace", null)
-                        .WithMany()
+                    b.HasOne("CarPark.Api.Models.ParkingSpace", "ParkingSpace")
+                        .WithMany("ParkingSessions")
                         .HasForeignKey("ParkingSpaceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("CarPark.Api.Models.Vehicle", null)
-                        .WithMany()
+                    b.HasOne("CarPark.Api.Models.Vehicle", "Vehicle")
+                        .WithMany("ParkingSessions")
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("ParkingSpace");
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("CarPark.Api.Models.ParkingSpace", b =>
+                {
+                    b.Navigation("ParkingSessions");
+                });
+
+            modelBuilder.Entity("CarPark.Api.Models.Vehicle", b =>
+                {
+                    b.Navigation("ParkingSessions");
                 });
 #pragma warning restore 612, 618
         }

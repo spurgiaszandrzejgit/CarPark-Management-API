@@ -40,13 +40,13 @@ namespace CarPark.Api.Data
             {
                 entity.HasKey(s => s.Id);
 
-                entity.HasOne<Vehicle>()
-                    .WithMany()
+                entity.HasOne(s => s.Vehicle)
+                    .WithMany(v => v.ParkingSessions)
                     .HasForeignKey(s => s.VehicleId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne<ParkingSpace>()
-                    .WithMany()
+                entity.HasOne(s => s.ParkingSpace)
+                    .WithMany(p => p.ParkingSessions)
                     .HasForeignKey(s => s.ParkingSpaceId)
                     .OnDelete(DeleteBehavior.Restrict);
 

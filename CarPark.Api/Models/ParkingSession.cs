@@ -9,5 +9,9 @@
         public DateTime? TimeOut { get; set; }
         public decimal? Charge { get; set; }
 
+        // Navigation properties
+        public Vehicle Vehicle { get; set; } = null!;
+        public ParkingSpace ParkingSpace { get; set; } = null!;
+
     }
 }

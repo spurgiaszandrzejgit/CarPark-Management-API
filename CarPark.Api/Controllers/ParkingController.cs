@@ -86,5 +86,4 @@ public class ParkingController : ControllerBase
 
         return Ok(result);
     }
-
 }
